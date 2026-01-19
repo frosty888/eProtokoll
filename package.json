@@ -1,5 +1,5 @@
 {
-  "name": "eprotokoll"
+  "name": "eprotokoll",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
