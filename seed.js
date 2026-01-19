@@ -1,8 +1,14 @@
+// seed.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/eprotokoll';
+const MONGODB_URI = process.env.MONGO_URI; // no fallback to localhost in production
+
+if (!MONGODB_URI) {
+    console.error("MONGO_URI environment variable not set. Exiting.");
+    process.exit(1);
+}
 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
@@ -19,9 +25,12 @@ const User = mongoose.model('User', userSchema);
 
 async function seed() {
     try {
-        console.log('Duke u lidhur me MongoDB...');
-        await mongoose.connect(MONGODB_URI);
-        console.log('Lidhja u krye');
+        console.log('Connecting to MongoDB...');
+        await mongoose.connect(MONGODB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+        console.log('MongoDB connected');
 
         const users = [
             {
@@ -57,17 +66,17 @@ async function seed() {
         for (const userData of users) {
             const exists = await User.findOne({ username: userData.username });
             if (exists) {
-                console.log(userData.username + ' ekziston');
+                console.log(userData.username + ' already exists');
             } else {
                 await User.create(userData);
-                console.log('U krijua: ' + userData.username);
+                console.log('Created: ' + userData.username);
             }
         }
 
-        console.log('Perfundoi');
+        console.log('Seeding complete');
         process.exit(0);
     } catch (error) {
-        console.error('Gabim:', error.message);
+        console.error('Error:', error.message);
         process.exit(1);
     }
 }
