@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raporte - eProtokoll</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; }
+        .navbar {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h1 { font-size: 24px; }
+        .navbar .user-info { display: flex; gap: 20px; align-items: center; }
+        .navbar a { color: white; text-decoration: none; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .menu { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+        .menu a { color: #667eea; text-decoration: none; font-weight: 500; }
+        .content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .content h2 { margin-bottom: 20px; color: #333; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+        .stat-card h3 { font-size: 32px; color: #667eea; margin-bottom: 5px; }
+        .stat-card p { color: #666; font-size: 14px; }
+        .chart-container {
+            margin-top: 30px;
+        }
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .bar-label {
+            width: 120px;
+            font-size: 14px;
+            color: #555;
+        }
+        .bar-wrapper {
+            flex: 1;
+            background: #e9ecef;
+            border-radius: 4px;
+            height: 25px;
+            overflow: hidden;
+        }
+        .bar {
+            height: 100%;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            transition: width 0.5s;
+        }
+        .bar.incoming { background: #2196f3; }
+        .bar.outgoing { background: #ff9800; }
+        .bar.internal { background: #9c27b0; }
+        .bar.pending { background: #ffc107; color: #333; }
+        .bar.approved { background: #4caf50; }
+        .bar.rejected { background: #f44336; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        th { background: #f8f9fa; font-weight: 600; }
+        .section-title { 
+            font-size: 18px; 
+            color: #333; 
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .print-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+        @media print {
+            .navbar, .menu, .print-btn { display: none; }
+            .content { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>eProtokoll</h1>
+        <div class="user-info">
+            <span><%= user.fullName %> (<%= user.role %>)</span>
+            <a href="/logout">Dil</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="menu">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/documents">Dokumentet</a>
+            <a href="/documents/upload">Ngarko Dokument</a>
+            <a href="/documents/reports/protocol-book">Liber Protokolli</a>
+            <a href="/documents/reports/statistics">Raporte</a>
+            <% if (user.role === 'ADMIN') { %>
+                <a href="/users">Perdoruesit</a>
+            <% } %>
+        </div>
+        
+        <div class="content">
+            <button class="print-btn" onclick="window.print()">Printo Raportin</button>
+            <h2>Raport Statistikor - <%= year %></h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3><%= stats.total %></h3>
+                    <p>Total Dokumente</p>
+                </div>
+                <div class="stat-card">
+                    <h3><%= stats.incoming %></h3>
+                    <p>Hyrje (Incoming)</p>
+                </div>
+                <div class="stat-card">
+                    <h3><%= stats.outgoing %></h3>
+                    <p>Dalje (Outgoing)</p>
+                </div>
+                <div class="stat-card">
+                    <h3><%= stats.internal %></h3>
+                    <p>Brendshme (Internal)</p>
+                </div>
+            </div>
+            
+            <h3 class="section-title">Sipas Llojit te Dokumentit</h3>
+            <div class="bar-chart">
+                <div class="bar-row">
+                    <span class="bar-label">Hyrje</span>
+                    <div class="bar-wrapper">
+                        <div class="bar incoming" style="width: <%= stats.total > 0 ? (stats.incoming / stats.total * 100) : 0 %>%">
+                            <%= stats.incoming %>
+                        </div>
+                    </div>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">Dalje</span>
+                    <div class="bar-wrapper">
+                        <div class="bar outgoing" style="width: <%= stats.total > 0 ? (stats.outgoing / stats.total * 100) : 0 %>%">
+                            <%= stats.outgoing %>
+                        </div>
+                    </div>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">Brendshme</span>
+                    <div class="bar-wrapper">
+                        <div class="bar internal" style="width: <%= stats.total > 0 ? (stats.internal / stats.total * 100) : 0 %>%">
+                            <%= stats.internal %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="section-title">Sipas Statusit</h3>
+            <div class="bar-chart">
+                <div class="bar-row">
+                    <span class="bar-label">Ne Pritje</span>
+                    <div class="bar-wrapper">
+                        <div class="bar pending" style="width: <%= stats.total > 0 ? (stats.pending / stats.total * 100) : 0 %>%">
+                            <%= stats.pending %>
+                        </div>
+                    </div>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">Miratuar</span>
+                    <div class="bar-wrapper">
+                        <div class="bar approved" style="width: <%= stats.total > 0 ? (stats.approved / stats.total * 100) : 0 %>%">
+                            <%= stats.approved %>
+                        </div>
+                    </div>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">Refuzuar</span>
+                    <div class="bar-wrapper">
+                        <div class="bar rejected" style="width: <%= stats.total > 0 ? (stats.rejected / stats.total * 100) : 0 %>%">
+                            <%= stats.rejected %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="section-title">Dokumentet sipas Muajit</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Muaji</th>
+                        <th>Hyrje</th>
+                        <th>Dalje</th>
+                        <th>Brendshme</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% const months = ['Janar', 'Shkurt', 'Mars', 'Prill', 'Maj', 'Qershor', 'Korrik', 'Gusht', 'Shtator', 'Tetor', 'Nentor', 'Dhjetor']; %>
+                    <% monthlyStats.forEach((m, i) => { %>
+                        <tr>
+                            <td><%= months[i] %></td>
+                            <td><%= m.incoming %></td>
+                            <td><%= m.outgoing %></td>
+                            <td><%= m.internal %></td>
+                            <td><strong><%= m.incoming + m.outgoing + m.internal %></strong></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+            
+            <h3 class="section-title">Afatet e Vonuara</h3>
+            <div class="stats-grid">
+                <div class="stat-card" style="border-left-color: #f44336;">
+                    <h3 style="color: #f44336;"><%= stats.overdue %></h3>
+                    <p>Dokumente te Vonuara</p>
+                </div>
+                <div class="stat-card" style="border-left-color: #ff9800;">
+                    <h3 style="color: #ff9800;"><%= stats.dueSoon %></h3>
+                    <p>Afati brenda 3 diteve</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

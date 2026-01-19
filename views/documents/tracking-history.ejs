@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historiku i Gjurmimit - eProtokoll</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; }
+        .navbar {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .navbar h1 { font-size: 24px; }
+        .navbar .user-info { display: flex; gap: 20px; align-items: center; }
+        .navbar a { color: white; text-decoration: none; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .menu { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+        .menu a { color: #667eea; text-decoration: none; font-weight: 500; }
+        .menu a:hover { text-decoration: underline; }
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .doc-header {
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .doc-header h2 { color: #333; margin-bottom: 5px; }
+        .doc-header .protocol {
+            color: #667eea;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .section-title {
+            color: #667eea;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        /* Timeline styles */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+            border-radius: 3px;
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 25px;
+        }
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -26px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            background: #667eea;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px #667eea;
+        }
+        .timeline-dot.start {
+            background: #4caf50;
+            box-shadow: 0 0 0 3px #4caf50;
+        }
+        .timeline-dot.delegate {
+            background: #2196f3;
+            box-shadow: 0 0 0 3px #2196f3;
+        }
+        .timeline-dot.response {
+            background: #ff9800;
+            box-shadow: 0 0 0 3px #ff9800;
+        }
+        .timeline-dot.approved {
+            background: #4caf50;
+            box-shadow: 0 0 0 3px #4caf50;
+        }
+        .timeline-dot.rejected {
+            background: #f44336;
+            box-shadow: 0 0 0 3px #f44336;
+        }
+        .timeline-content {
+            background: #f9f9f9;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .timeline-content.delegate {
+            border-left-color: #2196f3;
+        }
+        .timeline-content.response {
+            border-left-color: #ff9800;
+        }
+        .timeline-content.approved {
+            border-left-color: #4caf50;
+        }
+        .timeline-content.rejected {
+            border-left-color: #f44336;
+        }
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .timeline-action {
+            font-weight: 600;
+            color: #333;
+            font-size: 15px;
+        }
+        .timeline-date {
+            color: #888;
+            font-size: 13px;
+        }
+        .timeline-users {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .user-badge {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .user-badge.from {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        .user-badge.to {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .arrow {
+            color: #999;
+        }
+        .timeline-remarks {
+            background: white;
+            padding: 10px 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+        .assigned-users {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .assigned-users h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .assigned-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .assigned-user {
+            background: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: 1px solid #ddd;
+        }
+        .btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .btn:hover { background: #5568d3; }
+        .btn-secondary { background: #999; margin-left: 10px; }
+        .empty-timeline {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        @media print {
+            .navbar, .menu, .btn { display: none; }
+            .container { margin: 0; max-width: 100%; }
+            .content { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>eProtokoll</h1>
+        <div class="user-info">
+            <span><%= user.fullName %> (<%= user.role %>)</span>
+            <a href="/logout">Dil</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="menu">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/documents">Dokumentet</a>
+            <a href="/documents/<%= document._id %>">← Kthehu tek Dokumenti</a>
+        </div>
+        
+        <div class="content">
+            <div class="doc-header">
+                <span class="protocol"><%= document.protocolNumber %></span>
+                <h2><%= document.title %></h2>
+            </div>
+            
+            <% if (document.assignedTo && document.assignedTo.length > 0) { %>
+                <div class="assigned-users">
+                    <h4>👥 Punonjësit e Caktuar për këtë Dokument:</h4>
+                    <div class="assigned-list">
+                        <% document.assignedTo.forEach(assigned => { %>
+                            <span class="assigned-user">
+                                <%= assigned.fullName %> 
+                                <% if (assigned.department) { %>
+                                    (<%= assigned.department %>)
+                                <% } %>
+                            </span>
+                        <% }) %>
+                    </div>
+                </div>
+            <% } %>
+            
+            <h3 class="section-title">📜 Historiku i Plotë i Gjurmimit</h3>
+            
+            <% if (!document.routing || document.routing.length === 0) { %>
+                <div class="empty-timeline">
+                    <p>Nuk ka veprime të regjistruara për këtë dokument.</p>
+                </div>
+            <% } else { %>
+                <div class="timeline">
+                    <!-- Krijimi i dokumentit -->
+                    <div class="timeline-item">
+                        <div class="timeline-dot start"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-action">📄 Dokumenti u Krijua</span>
+                                <span class="timeline-date">
+                                    <%= new Date(document.createdAt).toLocaleString('sq-AL') %>
+                                </span>
+                            </div>
+                            <div class="timeline-users">
+                                <span class="user-badge">
+                                    👤 <%= document.uploadedBy.fullName %>
+                                    <% if (document.uploadedBy.department) { %>
+                                        (<%= document.uploadedBy.department %>)
+                                    <% } %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Routing entries -->
+                    <% document.routing.forEach((route, index) => { 
+                        let dotClass = 'delegate';
+                        let contentClass = 'delegate';
+                        let icon = '📤';
+                        
+                        if (route.action && route.action.toLowerCase().includes('miratoi')) {
+                            dotClass = 'approved';
+                            contentClass = 'approved';
+                            icon = '✅';
+                        } else if (route.action && route.action.toLowerCase().includes('refuzoi')) {
+                            dotClass = 'rejected';
+                            contentClass = 'rejected';
+                            icon = '❌';
+                        } else if (route.action && route.action.toLowerCase().includes('përgjigje')) {
+                            dotClass = 'response';
+                            contentClass = 'response';
+                            icon = '💬';
+                        }
+                    %>
+                        <div class="timeline-item">
+                            <div class="timeline-dot <%= dotClass %>"></div>
+                            <div class="timeline-content <%= contentClass %>">
+                                <div class="timeline-header">
+                                    <span class="timeline-action"><%= icon %> <%= route.action %></span>
+                                    <span class="timeline-date">
+                                        <%= new Date(route.date).toLocaleString('sq-AL') %>
+                                    </span>
+                                </div>
+                                <div class="timeline-users">
+                                    <% if (route.from) { %>
+                                        <span class="user-badge from">
+                                            Nga: <%= route.from.fullName %>
+                                            <% if (route.from.department) { %>
+                                                (<%= route.from.department %>)
+                                            <% } %>
+                                        </span>
+                                    <% } %>
+                                    <% if (route.from && route.to) { %>
+                                        <span class="arrow">→</span>
+                                    <% } %>
+                                    <% if (route.to) { %>
+                                        <span class="user-badge to">
+                                            Për: <%= route.to.fullName %>
+                                            <% if (route.to.department) { %>
+                                                (<%= route.to.department %>)
+                                            <% } %>
+                                        </span>
+                                    <% } %>
+                                </div>
+                                <% if (route.remarks) { %>
+                                    <div class="timeline-remarks">
+                                        "<%= route.remarks %>"
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } %>
+            
+            <div style="margin-top: 30px;">
+                <a href="/documents/<%= document._id %>" class="btn">← Kthehu tek Dokumenti</a>
+                <a href="javascript:window.print()" class="btn btn-secondary">🖨️ Printo</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

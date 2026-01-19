@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shto Perdorues - eProtokoll</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; }
+        .navbar {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .navbar h1 { font-size: 24px; }
+        .navbar .user-info { display: flex; gap: 20px; align-items: center; }
+        .navbar a { color: white; text-decoration: none; }
+        .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+        .menu { display: flex; gap: 20px; margin-bottom: 20px; }
+        .menu a { color: #667eea; text-decoration: none; font-weight: 500; }
+        .menu a:hover { text-decoration: underline; }
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .content h2 { color: #333; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn:hover { background: #5568d3; }
+        .btn-secondary {
+            background: #999;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>eProtokoll</h1>
+        <div class="user-info">
+            <span><%= user.fullName %> (<%= user.role %>)</span>
+            <a href="/logout">Dil</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="menu">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/documents">Dokumentet</a>
+            <a href="/documents/upload">Ngarko Dokument</a>
+            <a href="/institutions">Institucione</a> %>
+            <% if (user.role === 'ADMIN') { %>
+                <a href="/users">Perdoruesit</a>
+            <% } %>
+        </div>
+        
+        <div class="content">
+            <h2>Shto Perdorues te Ri</h2>
+            
+            <% if (error) { %>
+                <div class="error"><%= error %></div>
+            <% } %>
+            
+            <form method="POST" action="/users/add">
+                <div class="form-group">
+                    <label for="fullName">Emri i Plote *</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="username">Username *</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Fjalekalimi *</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="role">Roli *</label>
+                    <select id="role" name="role" required>
+                        <option value="">Zgjidh rolin...</option>
+                        <option value="ADMIN">Administrator</option>
+                        <option value="MANAGER">Manager</option>
+                        <option value="STAFF">Staff</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="department">Departamenti *</label>
+                    <input type="text" id="department" name="department" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email">
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <button type="submit" class="btn">Shto Perdorues</button>
+                    <a href="/users" class="btn btn-secondary">Anulo</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

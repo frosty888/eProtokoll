@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afatet e Dokumenteve - eProtokoll</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; }
+        .navbar {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .navbar h1 { font-size: 24px; }
+        .navbar .user-info { display: flex; gap: 20px; align-items: center; }
+        .navbar a { color: white; text-decoration: none; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .menu { display: flex; gap: 20px; margin-bottom: 20px; }
+        .menu a { color: #667eea; text-decoration: none; font-weight: 500; }
+        .menu a:hover { text-decoration: underline; }
+        .content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        th { background: #f9f9f9; font-weight: 600; }
+        tr:hover { background: #f9f9f9; }
+        .overdue {
+            background: #ffebee !important;
+        }
+        .overdue td:first-child {
+            border-left: 4px solid #f44336;
+        }
+        .warning {
+            background: #fff3e0 !important;
+        }
+        .warning td:first-child {
+            border-left: 4px solid #ff9800;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-overdue { background: #ffcdd2; color: #c62828; }
+        .badge-soon { background: #ffe0b2; color: #e65100; }
+        .badge-ok { background: #c8e6c9; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>eProtokoll</h1>
+        <div class="user-info">
+            <span><%= user.fullName %> (<%= user.role %>)</span>
+            <a href="/logout">Dil</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="menu">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/documents">Dokumentet</a>
+            <a href="/documents/upload">Ngarko Dokument</a>
+            <a href="/documents/reports/protocol-book">Liber Protokolli</a>
+            <a href="/documents/reports/deadlines">Afatet</a>
+            <a href="/institutions">Institucione</a> %>
+            <% if (user.role === 'ADMIN') { %>
+                <a href="/users">Perdoruesit</a>
+            <% } %>
+        </div>
+        
+        <div class="content">
+            <div class="header">
+                <h2>⏰ Dokumentet me Afate</h2>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Protokolli</th>
+                        <th>Titulli</th>
+                        <th>Ngarkuar nga</th>
+                        <th>Afati</th>
+                        <th>Statusi</th>
+                        <th>Veprime</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (documents.length === 0) { %>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                                Nuk ka dokumente me afate aktive.
+                            </td>
+                        </tr>
+                    <% } else { %>
+                        <% 
+                        const now = new Date();
+                        const twoDays = 2 * 24 * 60 * 60 * 1000;
+                        
+                        documents.forEach(doc => {
+                            const deadline = new Date(doc.deadline);
+                            const diff = deadline - now;
+                            const isOverdue = diff < 0;
+                            const isSoon = diff > 0 && diff < twoDays;
+                            const rowClass = isOverdue ? 'overdue' : (isSoon ? 'warning' : '');
+                        %>
+                            <tr class="<%= rowClass %>">
+                                <td><strong><%= doc.protocolNumber || '-' %></strong></td>
+                                <td><%= doc.title %></td>
+                                <td><%= doc.uploadedBy.fullName %></td>
+                                <td>
+                                    <%= new Date(doc.deadline).toLocaleString('sq-AL') %>
+                                    <br>
+                                    <small style="color: #666;">
+                                        <% if (isOverdue) { %>
+                                            (<%= Math.floor(Math.abs(diff) / (24*60*60*1000)) %> dite me vonese)
+                                        <% } else { %>
+                                            (mbeten <%= Math.ceil(diff / (24*60*60*1000)) %> dite)
+                                        <% } %>
+                                    </small>
+                                </td>
+                                <td>
+                                    <% if (isOverdue) { %>
+                                        <span class="badge badge-overdue">I VONUAR</span>
+                                    <% } else if (isSoon) { %>
+                                        <span class="badge badge-soon">URGJENT</span>
+                                    <% } else { %>
+                                        <span class="badge badge-ok">NE KOHE</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <a href="/documents/<%= doc._id %>" style="color: #667eea;">Shiko</a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
