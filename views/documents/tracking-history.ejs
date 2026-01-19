@@ -242,7 +242,7 @@
             
             <% if (document.assignedTo && document.assignedTo.length > 0) { %>
                 <div class="assigned-users">
-                    <h4>👥 Punonjësit e Caktuar për këtë Dokument:</h4>
+                    <h4>  Punonjësit e Caktuar për këtë Dokument:</h4>
                     <div class="assigned-list">
                         <% document.assignedTo.forEach(assigned => { %>
                             <span class="assigned-user">
@@ -256,7 +256,7 @@
                 </div>
             <% } %>
             
-            <h3 class="section-title">📜 Historiku i Plotë i Gjurmimit</h3>
+            <h3 class="section-title">  Historiku i Plotë i Gjurmimit</h3>
             
             <% if (!document.routing || document.routing.length === 0) { %>
                 <div class="empty-timeline">
@@ -269,14 +269,14 @@
                         <div class="timeline-dot start"></div>
                         <div class="timeline-content">
                             <div class="timeline-header">
-                                <span class="timeline-action">📄 Dokumenti u Krijua</span>
+                                <span class="timeline-action">Dokumenti u Krijua</span>
                                 <span class="timeline-date">
                                     <%= new Date(document.createdAt).toLocaleString('sq-AL') %>
                                 </span>
                             </div>
                             <div class="timeline-users">
                                 <span class="user-badge">
-                                    👤 <%= document.uploadedBy.fullName %>
+                                    <%= document.uploadedBy.fullName %>
                                     <% if (document.uploadedBy.department) { %>
                                         (<%= document.uploadedBy.department %>)
                                     <% } %>
@@ -285,31 +285,31 @@
                         </div>
                     </div>
                     
-                    <!-- Routing entries -->
+                    
                     <% document.routing.forEach((route, index) => { 
                         let dotClass = 'delegate';
                         let contentClass = 'delegate';
-                        let icon = '📤';
+                        
                         
                         if (route.action && route.action.toLowerCase().includes('miratoi')) {
                             dotClass = 'approved';
                             contentClass = 'approved';
-                            icon = '✅';
+                            
                         } else if (route.action && route.action.toLowerCase().includes('refuzoi')) {
                             dotClass = 'rejected';
                             contentClass = 'rejected';
-                            icon = '❌';
+                            
                         } else if (route.action && route.action.toLowerCase().includes('përgjigje')) {
                             dotClass = 'response';
                             contentClass = 'response';
-                            icon = '💬';
+                            
                         }
                     %>
                         <div class="timeline-item">
                             <div class="timeline-dot <%= dotClass %>"></div>
                             <div class="timeline-content <%= contentClass %>">
                                 <div class="timeline-header">
-                                    <span class="timeline-action"><%= icon %> <%= route.action %></span>
+                                    
                                     <span class="timeline-date">
                                         <%= new Date(route.date).toLocaleString('sq-AL') %>
                                     </span>
@@ -348,7 +348,7 @@
             
             <div style="margin-top: 30px;">
                 <a href="/documents/<%= document._id %>" class="btn">← Kthehu tek Dokumenti</a>
-                <a href="javascript:window.print()" class="btn btn-secondary">🖨️ Printo</a>
+                <a href="javascript:window.print()" class="btn btn-secondary">  Printo</a>
             </div>
         </div>
     </div>

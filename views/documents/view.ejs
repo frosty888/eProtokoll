@@ -241,11 +241,11 @@
                 </div>
             <% } %>
             <div style="margin-top: 30px;">
-                <a href="/documents/download/<%= document._id %>" class="btn">📥 Shkarko</a>
+                <a href="/documents/download/<%= document._id %>" class="btn">Shkarko</a>
                 <% if (user.role === 'ADMIN' || user.role === 'MANAGER') { %>
-                    <a href="/documents/<%= document._id %>/delegate" class="btn" style="background: #2196f3;">📤 Delego</a>
+                    <a href="/documents/<%= document._id %>/delegate" class="btn" style="background: #2196f3;">Delego</a>
                 <% } %>
-                <a href="/documents/<%= document._id %>/tracking-history" class="btn" style="background: #9c27b0;">📜 Historiku i Gjurmimit</a>
+                <a href="/documents/<%= document._id %>/tracking-history" class="btn" style="background: #9c27b0;">  Historiku i Gjurmimit</a>
                 <a href="/documents" class="btn btn-secondary">← Kthehu</a>
             </div>
             
