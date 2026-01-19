@@ -22,5 +22,8 @@ RUN mkdir -p uploads
 # Expose port
 EXPOSE 3000
 
+# Seed once during build
+RUN node seed.js
+
 # Start application
 CMD ["npm", "start"]
