@@ -1,11 +1,11 @@
-// User Management Routes
+
 
 
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 
-// Middleware
+
 function isAuthenticated(req, res, next) {
     if (req.session.user) return next();
     res.redirect('/login');
@@ -16,7 +16,7 @@ function isAdmin(req, res, next) {
     res.status(403).send('Access denied');
 }
 
-// List users
+
 router.get('/', isAuthenticated, isAdmin, async (req, res) => {
     try {
         const users = await User.find().sort({ createdAt: -1 });
@@ -30,7 +30,7 @@ router.get('/', isAuthenticated, isAdmin, async (req, res) => {
     }
 });
 
-// Add user form
+
 router.get('/add', isAuthenticated, isAdmin, (req, res) => {
     res.render('users/add', {
         user: req.session.user,
@@ -38,7 +38,7 @@ router.get('/add', isAuthenticated, isAdmin, (req, res) => {
     });
 });
 
-// Create user
+
 router.post('/add', isAuthenticated, isAdmin, async (req, res) => {
     try {
         const { username, password, fullName, role, department, email } = req.body;
@@ -71,7 +71,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res) => {
     }
 });
 
-// Edit user form
+
 router.get('/edit/:id', isAuthenticated, isAdmin, async (req, res) => {
     try {
         const editUser = await User.findById(req.params.id);
@@ -89,7 +89,7 @@ router.get('/edit/:id', isAuthenticated, isAdmin, async (req, res) => {
     }
 });
 
-// Update user
+
 router.post('/edit/:id', isAuthenticated, isAdmin, async (req, res) => {
     try {
         const { fullName, role, department, email, isActive } = req.body;
@@ -109,7 +109,7 @@ router.post('/edit/:id', isAuthenticated, isAdmin, async (req, res) => {
     }
 });
 
-// Delete user
+
 router.post('/delete/:id', isAuthenticated, isAdmin, async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);

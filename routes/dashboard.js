@@ -3,7 +3,7 @@ const router = express.Router();
 const Document = require('../models/Document');
 const User = require('../models/User');
 
-// Middleware to check authentication
+
 function isAuthenticated(req, res, next) {
     if (req.session.user) {
         return next();
@@ -11,7 +11,7 @@ function isAuthenticated(req, res, next) {
     res.redirect('/login');
 }
 
-// Dashboard
+
 router.get('/', isAuthenticated, async (req, res) => {
     try {
         const totalDocuments = await Document.countDocuments();
@@ -30,11 +30,11 @@ router.get('/', isAuthenticated, async (req, res) => {
                 pendingDocuments,
                 totalUsers
             },
-            recentDocuments: recentDocuments || []  // Add fallback
+            recentDocuments: recentDocuments || [] 
         });
     } catch (error) {
         console.error('Dashboard error:', error);
-        // If database fails, show empty dashboard
+        
         res.render('dashboard', {
             user: req.session.user,
             stats: {

@@ -1,11 +1,11 @@
-// Institution Management Routes
+
 
 
 const express = require('express');
 const router = express.Router();
 const Institution = require('../models/Institution');
 
-// Middleware
+
 function isAuthenticated(req, res, next) {
     if (req.session.user) return next();
     res.redirect('/login');
@@ -16,7 +16,7 @@ function isAdmin(req, res, next) {
     res.status(403).send('Access denied');
 }
 
-// List institutions
+
 router.get('/', isAuthenticated, async (req, res) => {
     try {
         const institutions = await Institution.find().sort({ name: 1 });
@@ -30,7 +30,7 @@ router.get('/', isAuthenticated, async (req, res) => {
     }
 });
 
-// Add institution form
+
 router.get('/add', isAuthenticated, isAdmin, (req, res) => {
     res.render('institutions/add', {
         user: req.session.user,
@@ -72,7 +72,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res) => {
     }
 });
 
-// Edit institution form
+
 router.get('/edit/:id', isAuthenticated, isAdmin, async (req, res) => {
     try {
         const institution = await Institution.findById(req.params.id);
@@ -90,7 +90,7 @@ router.get('/edit/:id', isAuthenticated, isAdmin, async (req, res) => {
     }
 });
 
-// Update institution
+
 router.post('/edit/:id', isAuthenticated, isAdmin, async (req, res) => {
     try {
         const { name, type, address, phone, email, contactPerson, notes, isActive } = req.body;
@@ -113,7 +113,7 @@ router.post('/edit/:id', isAuthenticated, isAdmin, async (req, res) => {
     }
 });
 
-// Delete institution
+
 router.post('/delete/:id', isAuthenticated, isAdmin, async (req, res) => {
     try {
         await Institution.findByIdAndDelete(req.params.id);

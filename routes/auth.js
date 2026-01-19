@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 
-// Login Page
+
 router.get('/', (req, res) => {
     if (req.session.user) {
         return res.redirect('/dashboard');
@@ -17,11 +17,11 @@ router.get('/login', (req, res) => {
     res.render('login', { error: null });
 });
 
-// Login Handler - TEMPORARY HARDCODED
+
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-        // Real authentication (will use after creating user through UI)
+        
         const user = await User.findOne({ username, isActive: true });
 
         if (!user) {
@@ -49,7 +49,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Logout
+
 router.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/login');

@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
     role: { type: String, enum: ['ADMIN', 'MANAGER', 'STAFF'], default: 'STAFF' },
     department: { type: String, required: true },
     email: String,
-    createdAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now },s
     isActive: { type: Boolean, default: true }
 });
 
